@@ -1,0 +1,79 @@
+#def determine_hand(dice):
+#    """ determines what hand has been rolled (five of a kind etc.) """
+#    # Important to be in this order, onepair depends on knowing it is not
+#    # five of a kind or four of a kind
+#    if is_fivekind(dice): return FIVE_KIND
+#    if is_fourkind(dice): return FOUR_KIND
+#    if is_fullhouse(dice): return FULL_HOUSE
+#    if is_straight(dice): return STRAIGHT
+#    if is_threekind(dice): return THREE_KIND
+#    if is_twopair(dice): return TWO_PAIR
+#    if is_onepair(dice): return ONE_PAIR
+#    return BUST
+#
+#def is_onepair(dice):
+#    for die_result, num_results in groupby(sorted(dice)):
+#        if len(list(num_results)) == 2:
+#            return 1
+#    return 0
+#
+#def is_twopair(dice):
+#    num_unique_results = 0
+#    for die_result in groupby(sorted(dice)):
+#        num_unique_results += 1
+#    if num_unique_results == 3:
+#        return 1
+#    return 0
+#
+#def is_threekind(dice):
+#    for die_result, num_results in groupby(sorted(dice)):
+#        if len(list(num_results)) == 3:
+#            return 1
+#    return 0
+#
+#def is_fullhouse(dice):
+#    if is_threekind(dice) and is_onepair(dice):
+#        return 1
+#    return 0
+#
+#def is_straight(dice):
+#    straight_1 = {'Ace', 'King', 'Queen', 'Jack', '10'}
+#    straight_2 = {'King', 'Queen', 'Jack', '10', '9'}
+#    if set(dice) == straight_1 or set(dice) == straight_2:
+#        return 1
+#    return 0
+#
+#def is_fourkind(dice):
+#    for die_result, num_results in groupby(sorted(dice)):
+#        if len(list(num_results)) == 4:
+#            return 1
+#    return 0
+#
+#def is_fivekind(dice):
+#    for result, num_results in groupby(sorted(dice)):
+#        if len(list(num_results)) == 5:
+#            return 1
+#    return 0
+
+FULL_HOUSE_1 = ['Ace', 'Ace', 'Queen', 'Queen', 'Queen']
+FIVE_KIND_1 = ['Ace', 'Ace', 'Ace', 'Ace', 'Ace']
+FOUR_KIND_1 = ['Ace', 'Ace', 'Ace', 'Ace', 'Queen']
+FOUR_KIND_2 = ['Ace', 'Ace', 'Ace', 'Queen', 'Ace']
+THREE_KIND_1 = ['Ace', 'Ace', 'Ace', '9', 'Queen']
+THREE_KIND_2 = ['Ace', 'Queen', 'Queen', '9', 'Queen']
+ONE_PAIR_1 = ['Ace', 'Ace', 'King', '9', 'Queen']
+TWO_PAIR_1 = ['Ace', 'Ace', 'King', 'King', 'Queen']
+STRAIGHT_1 = ['Ace', 'King', 'Queen', 'Jack', '10']
+STRAIGHT_2 = ['Ace', 'Queen', 'King', 'Jack', '10']
+
+assert determine_hand(STRAIGHT_1) == STRAIGHT
+assert determine_hand(STRAIGHT_2) == STRAIGHT
+assert determine_hand(FOUR_KIND_2) == FOUR_KIND
+assert determine_hand(FOUR_KIND_1) == FOUR_KIND
+assert determine_hand(FULL_HOUSE_1) == FULL_HOUSE
+assert determine_hand(FIVE_KIND_1) == FIVE_KIND
+assert determine_hand(THREE_KIND_2) == THREE_KIND
+assert determine_hand(THREE_KIND_1) == THREE_KIND
+assert determine_hand(TWO_PAIR_1) == TWO_PAIR
+assert determine_hand(ONE_PAIR_1) == ONE_PAIR
+
