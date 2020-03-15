@@ -23,7 +23,7 @@ CARD_TO_UNICODE = {
         'C1': chr(0x1F0D1), 'C2': chr(0x1F0D2), 'C3': chr(0x1F0D3),
         'C4': chr(0x1F0D4), 'C5': chr(0x1F0D5), 'C6': chr(0x1F0D6),
         'C7': chr(0x1F0D7), 'C8': chr(0x1F0D8), 'C9': chr(0x1F0D9),
-        'C0': chr(0x1F0DA), 'Cj': chr(0x1F0DB), 'Cq': chr(0x1F0DD),
+        'C10': chr(0x1F0DA), 'Cj': chr(0x1F0DB), 'Cq': chr(0x1F0DD),
         'Ck': chr(0x1F0DE)
         }
 
@@ -48,14 +48,74 @@ def initial_hour(hour, dial):
 
 def hour_after_playing_from_beginning_for_at_most(hour, nb_of_steps, dial,
                                                   centre):
+    curr_pos = 13
+    revealed_cards = set()
+    for i in range(nb_of_steps):
+        old_pos = curr_pos
+        curr_card = get_card(curr_pos, dial, centre)
+        old_num_revealed_cards = len(revealed_cards)
+        revealed_cards.add(curr_card)
+        curr_num_revealed_cards = len(revealed_cards)
+        if old_num_revealed_cards == curr_num_revealed_cards:
+            return -1
+        curr_pos = find_where_to_place_card(curr_card)
+        dial, centre = place_card(curr_pos, dial, centre, curr_card)
 
-    print()
-    # REPLACE PRINT() ABOVE WITH YOUR CODE
+    dial_to_string(hour, dial, centre, revealed_cards)
 
 def kings_at_end_of_game(dial, centre):
-    print()
+    result = hour_after_playing_from_beginning_for_at_most(13, 52, dial,
+                                                               centre)
+    if result == -1:
+        if ('Hk', 'Dk', 'Ck', 'Sk') in centre:
+            print(centre)
+        else:
+            print('No success')
+
     # REPLACE PRINT() ABOVE WITH YOUR CODE
 
 # POSSIBLY DEFINE OTHER FUNCTIONS
-clock, centre = generate_dial_and_centre(0)
-initial_hour(12, clock)
+def get_card(pos, dial, centre):
+    if pos == 13:
+        return centre.pop(len(centre)-1)
+    return dial[pos].pop(len(dial[pos])-1)
+
+def place_card(pos, dial, centre, card):
+    if pos == 13:
+        centre.insert(0, card)
+    else:
+        dial[pos].insert(0, card)
+    return dial, centre
+
+def find_where_to_place_card(card):
+    """ returns a number corresponding to the position the card should be
+    placed """
+    place = card[1:]
+    if place == 'j':
+        place = 11
+    elif place == 'q':
+        place = 12
+    elif place == 'k':
+        place = 13
+    return int(place)
+
+def dial_to_string(hour, dial, centre, revealed_cards):
+    to_print = []
+    if hour == 13:
+        print(centre)
+        for card in centre:
+            if card in revealed_cards:
+                to_print.append(CARD_TO_UNICODE[card])
+            else:
+                to_print.append('hidden'+CARD_TO_UNICODE[card])
+    else:
+        print(dial[hour])
+        for card in dial[hour]:
+            if card in revealed_cards:
+                to_print.append(CARD_TO_UNICODE[card])
+            else:
+                to_print.append('hidden'+CARD_TO_UNICODE[card])
+    print(' '.join(to_print))
+
+dial, centre = generate_dial_and_centre(18)
+kings_at_end_of_game(dial, centre)

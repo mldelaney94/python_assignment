@@ -57,7 +57,7 @@ def simulate(n):
     """ Over n simulations, counts number of hands of each rank, and prints
     statistical information about their occurrences"""
     hand_percentage = {ONE_PAIR: 0, TWO_PAIR: 0, THREE_KIND: 0, FULL_HOUSE: 0,
-                       STRAIGHT: 0, FOUR_KIND: 0, FIVE_KIND: 0}
+                       STRAIGHT: 0, FOUR_KIND: 0, FIVE_KIND: 0, BUST: 0}
     for i in range(n):
         hand = generate_hand(5)
         hand_percentage[determine_hand(hand)] += 1
@@ -72,38 +72,41 @@ def generate_hand(num_cards):
                  KING: 'King', ACE: 'Ace'}
 
     for i in range(num_cards):
-        hand.append(hand_dict[randrange(ACE, NINE)])
+        hand.append(hand_dict[randrange(ACE, NINE+1)])
 
     return hand
 
 def determine_hand(dice):
     """ Determines the rank of a legal hand """
-    straight_1 = {'Ace', 'King', 'Queen', 'Jack', '10'}
-    straight_2 = {'King', 'Queen', 'Jack', '10', '9'}
-    if set(dice) == straight_1 or set(dice) == straight_2:
-        return STRAIGHT
-
-    num_unique_results = 0
-    possible_three_kind = 0
-    for result, groupby_obj in groupby(sorted(dice)):
-        s = len(list(groupby_obj))
-        if s == 5:
-            return FIVE_KIND
-        elif s == 4:
-            return FOUR_KIND
-        elif s == 3:
-            possible_three_kind = 1
-        num_unique_results += 1
-    if num_unique_results == 2:
-        return FULL_HOUSE
-    elif num_unique_results == 3 and possible_three_kind == 1:
-        return THREE_KIND
-    elif num_unique_results == 4:
+    set_dice = set(dice)
+    if len(set_dice) == 5:
+        straight_1 = {'Ace', 'King', 'Queen', 'Jack', '10'}
+        straight_2 = {'King', 'Queen', 'Jack', '10', '9'}
+        if set_dice in (straight_1, straight_2):
+            return STRAIGHT
+        else:
+            return BUST
+    elif len(set_dice) == 4:
         return ONE_PAIR
-    elif num_unique_results == 5:
-        return BUST
-    else:
-        return TWO_PAIR
+    elif len(set_dice) == 2:
+        #FOUR_KIND or FULL_HOUSE
+        for result, groupby_obj in groupby(sorted(dice)):
+            s = len(list(groupby_obj))
+            if s in (3, 2):
+                return FULL_HOUSE
+            return FOUR_KIND
+    elif len(set_dice) == 3:
+        #THREE_KIND or TWO_PAIR
+        for result, groupby_obj in groupby(sorted(dice)):
+            s = len(list(groupby_obj))
+            if s == 2:
+                return TWO_PAIR
+            elif s == 3:
+                return THREE_KIND
+    elif len(set_dice) == 1:
+        return FIVE_KIND
+
+    return -1
 
 def simulation_to_string(n, results):
     """ Prints the results of the simulation """
@@ -114,6 +117,7 @@ def simulation_to_string(n, results):
     results_onepair = 100 * (results[ONE_PAIR] / n)
     results_straight = 100 * (results[STRAIGHT] / n)
     results_fullhouse = 100 * (results[FULL_HOUSE] / n)
+    results_bust = 100 * (results[BUST] / n)
     print("Five of a kind: " + '%.2f' % results_fivekind + "%")
     print("Four of a kind: " + '%.2f' % results_fourkind + "%")
     print("Full house: " + '%.2f' % results_fullhouse + "%")
@@ -121,6 +125,7 @@ def simulation_to_string(n, results):
     print("Three of a kind: " + '%.2f' % results_threekind + "%")
     print("Two pair: " + '%.2f' % results_twopair + "%")
     print("One pair: " + '%.2f' % results_onepair + "%")
+    print("Bust: " + '%.2f' % results_bust + "%")
 
 def legal_keep_list(keep_list, orig_hand):
     """ Determines if keep_list is a legal input """
@@ -138,4 +143,4 @@ def legal_keep_list(keep_list, orig_hand):
             return 0
     return 1
 
-simulate(100000)
+simulate(1000000)

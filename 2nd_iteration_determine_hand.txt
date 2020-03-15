@@ -1,0 +1,28 @@
+def determine_hand(dice):
+    """ Determines the rank of a legal hand """
+    straight_1 = {'Ace', 'King', 'Queen', 'Jack', '10'}
+    straight_2 = {'King', 'Queen', 'Jack', '10', '9'}
+    if set(dice) == straight_1 or set(dice) == straight_2:
+        return STRAIGHT
+
+    num_unique_results = 0
+    possible_three_kind = 0
+    for result, groupby_obj in groupby(sorted(dice)):
+        s = len(list(groupby_obj))
+        if s == 5:
+            return FIVE_KIND
+        elif s == 4:
+            return FOUR_KIND
+        elif s == 3:
+            possible_three_kind = 1
+        num_unique_results += 1
+    if num_unique_results == 2:
+        return FULL_HOUSE
+    elif num_unique_results == 3 and possible_three_kind == 1:
+        return THREE_KIND
+    elif num_unique_results == 4:
+        return ONE_PAIR
+    elif num_unique_results == 5:
+        return BUST
+    else:
+        return TWO_PAIR
